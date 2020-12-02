@@ -3,11 +3,10 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-q1
 
 ```{r}
 prestige<-read.csv("prestige.csv")
-(prestige)
+head(prestige)
 ```
 
 
@@ -22,7 +21,7 @@ library(MASS)
 robust<-rlm(prestige~education+income+type,psi=psi.huber,data=prestige)
 summary(robust)
 plot(robust)
-?pt
+
 2*pt(2.9367,40,lower.tail=FALSE)
 2*pt(8.2639,40,lower.tail=FALSE)
 2*pt(2.4846,40,lower.tail=FALSE)
@@ -30,16 +29,12 @@ plot(robust)
 
 nrow(prestige)
 length(robust$w)
-
 plot(1:45,robust$w,xlab="Oberservation Number", ylab="Weight", main="Weight vs. Observation Number")
-
 which(robust$w<0.8)
-prestige[1][[1]][33]
-
 ```
 
 
-q2
+Bootstrap and Robust Regression
 ```{r}
 
 a6<-read.csv("assignment6.csv")
@@ -54,8 +49,6 @@ summary(a6.rr)
 plot(a6$x,a6$y,main="Plot for Data With Original Regression Line",xlab="x",ylab='y') + abline(a=(-9.067),b=49.850)
 
 plot(a6$x,a6$y,main="Plot for Data With Robust Regression Line",xlab="x",ylab='y') + abline(a=-2.9548,b=69.7441)
-
-
 
 data.frame(a6$x[hi],a6$y[hi])
 

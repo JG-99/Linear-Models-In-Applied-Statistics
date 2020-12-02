@@ -1,0 +1,141 @@
+---
+title: "Stepwise Regression Methods"
+output: html_notebook
+---
+
+Stepwise Regression Methods Without Using step(), and only lm().
+
+```{r}
+cement<-read.csv("cement.csv", header=TRUE)
+```
+
+Forward Selection
+```{r}
+head(cement)
+nrow(cement)
+
+model1<-lm(y~x1,data=cement)
+model2<-lm(y~x2,data=cement)
+model3<-lm(y~x3,data=cement)
+model4<-lm(y~x4,data=cement)
+model5<-lm(y~x5,data=cement)
+model5and4<-lm(y~x5+x4,data=cement)
+
+summary(model1)
+summary(model2)
+summary(model3)
+summary(model4)
+summary(model5)
+cor(cement)
+summary(model5and4)
+SSEX5<-sum((model5$residuals)^2)
+SSEX5andX4<-sum((model5and4$residuals)^2)
+SSRX4givenX5<- SSEX5 - SSEX5andX4
+
+anova(model5and4)
+MSResX5andX4<-57.59
+
+Fstat<-SSRX4givenX5 / MSResX5andX4
+
+tstat<-sqrt(Fstat)
+tstat
+
+model542<-lm(y~x5+x4+x2,data=cement)
+SSEX5X4<-sum((model5and4$residuals)^2)
+SSEX542<-sum((model542$residuals)^2)
+SSRX2givenX5X4<- SSEX5X4 - SSEX542
+
+anova(model542)
+
+MSResX542<-58.04=
+
+Fstat<-SSRX2givenX5X4 / MSResX542
+
+tstat<-sqrt(Fstat)
+tstat
+
+summary(model5and4)
+
+```
+
+Stepwise Regression
+```{r}
+
+mdl5<-lm(y~x5,data=cement)
+
+mdl51<-lm(y~x5+x1,data=cement)
+mdl52<-lm(y~x5+x2,data=cement)
+mdl53<-lm(y~x5+x3,data=cement)
+mdl54<-lm(y~x5+x4,data=cement)
+
+SSE5<-sum((mdl5$residuals)^2)
+SSE51<-sum((mdl51$residuals)^2)
+SSE52<-sum((mdl52$residuals)^2)
+SSE53<-sum((mdl53$residuals)^2)
+SSE54<-sum((mdl54$residuals)^2)
+
+SSR5g1<-SSE5 - SSE51
+SSR5g2<-SSE5 - SSE52
+SSR5g3<-SSE5 - SSE53
+SSR5g4<-SSE5 - SSE54
+
+MSRes51<-7.68
+MSRes52<-81.52
+MSRes53<-15.20
+MSRes54<-57.59
+
+Fstat51<-SSR5g1 / MSRes51
+Fstat52<-SSR5g2 / MSRes52
+Fstat53<-SSR5g3 / MSRes53
+Fstat54<-SSR5g4 / MSRes54
+
+Fstat51
+Fstat52
+Fstat53
+Fstat54
+
+mdl512<-lm(y~x5+x1+x2,data=cement)
+mdl513<-lm(y~x5+x1+x3,data=cement)
+mdl514<-lm(y~x5+x1+x4,data=cement)
+
+SSE51<-sum((mdl51$residuals)^2)
+SSE512<-sum((mdl512$residuals)^2)
+SSE513<-sum((mdl513$residuals)^2)
+SSE514<-sum((mdl514$residuals)^2)
+
+SSR51g2<-SSE51 - SSE512
+SSR51g3<-SSE51 - SSE513
+SSR51g4<-SSE51 - SSE514
+
+MSRes512<-5.12
+MSRes513<-5.40
+MSRes514<-8.50
+anova(mdl514)
+
+Fstat512<-SSR51g2 / MSRes512
+Fstat513<-SSR51g3 / MSRes513
+Fstat514<-SSR51g4 / MSRes514
+
+
+Fstat512
+Fstat513
+Fstat514
+tStat<-sqrt(Fstat512)
+tStat
+summary(mdl512)
+mdl12<-lm(y~x1+x2,data=cement)
+mdl124<-lm(y~x1+x2+x4,data=cement)
+summary(mdl12)
+summary(mdl124)
+
+AIC(mdl512,mdl12)
+
+```
+
+Backward Elimination
+```{r}
+fullmodel<-lm(y~x5+x4,data=cement)
+summary(fullmodel)
+anova(fullmodel)
+AIC(fullmodel)
+```

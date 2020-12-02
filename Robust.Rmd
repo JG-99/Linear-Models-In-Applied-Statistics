@@ -1,0 +1,91 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+q1
+
+```{r}
+prestige<-read.csv("prestige.csv")
+(prestige)
+```
+
+
+```{r}
+
+mdl.presitge<-lm(prestige~education+income+type,data=prestige)
+pairs(prestige)
+
+summary(mdl.presitge)
+plot(mdl.presitge)
+library(MASS)
+robust<-rlm(prestige~education+income+type,psi=psi.huber,data=prestige)
+summary(robust)
+plot(robust)
+?pt
+2*pt(2.9367,40,lower.tail=FALSE)
+2*pt(8.2639,40,lower.tail=FALSE)
+2*pt(2.4846,40,lower.tail=FALSE)
+2*pt(-2.6926,40)
+
+nrow(prestige)
+length(robust$w)
+
+plot(1:45,robust$w,xlab="Oberservation Number", ylab="Weight", main="Weight vs. Observation Number")
+
+which(robust$w<0.8)
+prestige[1][[1]][33]
+
+```
+
+
+q2
+```{r}
+
+a6<-read.csv("assignment6.csv")
+head(a6)
+nrow(a6)
+a6mdl<-lm(y~x,data=a6)
+summary(a6mdl)
+plot(a6mdl)
+a6.rr<-rlm(y~x,psi=psi.huber,data=a6)
+summary(a6.rr)
+
+plot(a6$x,a6$y,main="Plot for Data With Original Regression Line",xlab="x",ylab='y') + abline(a=(-9.067),b=49.850)
+
+plot(a6$x,a6$y,main="Plot for Data With Robust Regression Line",xlab="x",ylab='y') + abline(a=-2.9548,b=69.7441)
+
+
+
+data.frame(a6$x[hi],a6$y[hi])
+
+coeffs <- matrix(NA, ncol = 1, nrow = 1000)
+colnames(coeffs) <- c("Slope")
+for(i in 1:1000){
+  samp<-sample(1050,1050,replace=TRUE)
+  dat<-data.frame(a6$x[samp],a6$y[samp])
+  rr<-rlm(a6.y.samp.~a6.x.samp.,psi=psi.huber, data=dat)
+  coeffs[i,]<-summary(rr)$coefficient[2,1]
+}
+head(coeffs)
+
+hist(coeffs)
+quantile(coeffs,probs=c(0,0.025,0.5,0.975,1))
+ci<-quantile(coeffs,probs=c(0.025,0.975))
+ci
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

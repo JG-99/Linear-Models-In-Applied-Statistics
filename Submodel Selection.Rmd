@@ -1,0 +1,350 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+reactor<-read.csv("reactor.csv", header=TRUE)
+head(reactor)
+
+library(tidyverse)
+install.packages("caret")
+install.packages("leaps")
+library(caret)
+library(leaps)
+install.packages("olsrr")
+library(olsrr)
+```
+
+```{r}
+
+mdl<-lm(y~x1+x2+x3+x4+x5+x6+x7,data=reactor)
+summary(mdl)
+
+```
+
+Maximizing R^2 for p=2
+```{r}
+max<-0
+p1<-0
+x<-c("x1","x2","x3","x4","x5","x6","x7")
+
+for(i in 1:7){
+  model<-lm(noquote(paste(paste("y"),paste(x[i]),sep = "~")),data=reactor)
+  if(summary(model)$r.squared>max){
+      p1<-i
+      max = summary(model)$r.squared
+  }
+
+}
+p1
+max
+```
+p=3
+```{r}
+max2<-0
+p2<-0
+x<-c("x1","x2","x3","x4","x5","x6","x7")
+
+
+for(i in 1:7){
+  for(j in 1:7){
+    if(j!=i){
+      model<-lm(noquote(paste(paste("y~"),paste(x[i]),paste("+"),paste(x[j]))),data=reactor)
+      if(summary(model)$r.squared>max2){
+        p2<-c(i,j)
+        max2 = summary(model)$r.squared
+      }
+    }
+    
+  }
+}
+p2
+max2
+```
+
+p=4
+```{r}
+max3<-0
+p3<-0
+x<-c("x1","x2","x3","x4","x5","x6","x7")
+
+
+for(i in 1:7){
+  for(j in 1:7){
+    for(k in 1:7)
+    if(j!=i && i!=k && k!=j){
+      model<-lm(noquote(paste(paste("y~"),paste(x[i]),paste("+"),paste(x[j]),paste("+"),paste(x[k]))),data=reactor)
+      if(summary(model)$r.squared>max3){
+        p3<-c(i,j,k)
+        max3 = summary(model)$r.squared
+      }
+    }
+    
+  }
+}
+p3
+max3
+```
+
+p=5
+```{r}
+max4<-0
+p4<-0
+x<-c("x1","x2","x3","x4","x5","x6","x7")
+
+
+for(i in 1:7){
+  for(j in 1:7){
+    for(k in 1:7){
+      for(l in 1:7){
+    if(j!=i && i!=k && k!=j){
+      model<-lm(noquote(paste(paste("y~"),paste(x[i]),paste("+"),paste(x[j]),paste("+"),paste(x[k]),paste("+"),paste(x[l]))),data=reactor)
+      if(summary(model)$r.squared>max4){
+        p4<-c(i,j,k,l)
+        max4 = summary(model)$r.squared
+      }
+    }
+    }
+    }
+  }
+}
+p4
+max4
+```
+
+```{r}
+p<-c(2,3,4,5)
+R2<-c(max,max2,max3,max4)
+plot(p,R2,type="b",main="Maximum R^2 for each p=2..5")
+
+```
+
+Final Model
+```{r}
+final<-lm(y~x6+x1+x3,data=reactor)
+summary(final)
+
+```
+
+
+Minimum MSRes for p=2
+```{r}
+p<-2
+min1<-100000
+p1<-0
+x<-c("x1","x2","x3","x4","x5","x6","x7")
+
+for(i in 1:7){
+  model<-lm(noquote(paste(paste("y"),paste(x[i]),sep = "~")),data=reactor)
+  if(anova(model)[[3]][p]<min1){
+      p1<-i
+      min1 = anova(model)[[3]][p]
+  }
+
+}
+p1
+min1
+```
+
+p=3
+```{r}
+p<-3
+min2<-100000
+p2<-0
+
+for(i in 1:7){
+  for(j in 1:7){
+    if(j!=i){
+      model<-lm(noquote(paste(paste("y~"),paste(x[i]),paste("+"),paste(x[j]))),data=reactor)
+      if(anova(model)[[3]][p]<min2){
+        p2<-c(i,j)
+        min2 = anova(model)[[3]][p]
+      }
+    }
+    
+  }
+}
+
+p2
+min2
+
+```
+
+p=4
+```{r}
+p<-4
+min3<-100000
+p3<-0
+
+for(i in 1:7){
+  for(j in 1:7){
+    for(k in 1:7)
+    if(j!=i && i!=k && k!=j){
+      model<-lm(noquote(paste(paste("y~"),paste(x[i]),paste("+"),paste(x[j]),paste("+"),paste(x[k]))),data=reactor)
+      if(anova(model)[[3]][p]<min3){
+        p3<-c(i,j,k)
+        min3 = anova(model)[[3]][p]
+      }
+    }
+    
+  }
+}
+
+p3
+min3
+
+
+```
+p=5
+```{r}
+
+p<-5
+min4<-100000
+p4<-0
+
+for(i in 1:7){
+  for(j in 1:7){
+    for(k in 1:7){
+      for(l in 1:7){
+        if(j!=i && i!=k && k!=j && l!=i && l!=k && l!=j){
+      model<-lm(noquote(paste(paste("y~"),paste(x[i]),paste("+"),paste(x[j]),paste("+"),paste(x[k]),paste("+"),paste(x[l]))),data=reactor)
+      
+      if(anova(model)[[3]][p]<min4){
+        p4<-c(i,j,k,l)
+        min4 = anova(model)[[3]][p]
+      }
+    }
+    }
+    }
+  }
+}
+
+p4
+min4
+```
+
+
+Plotting
+```{r}
+p<-c(2,3,4,5)
+MSRes<-c(min1,min2,min3,min4)
+plot(p,MSRes,type="b",main="Minimum MSRes for each p=2..5")
+
+finalmin<-lm(y~x6+x1+x3,data=reactor)
+
+ols_mallows_cp(finalmin,mdl)
+
+```
+
+Finding Best Model with MAllow's CP Statistic for p=2
+```{r}
+p = 2
+cp2=0
+gap<-100000
+for(i in 1:7){
+  submdl<-lm(noquote(paste(paste("y"),paste(x[i]),sep = "~")),data=reactor)
+  cp<-ols_mallows_cp(submdl,mdl)
+  current<-abs(cp-p)
+  if(current<gap){
+    p1<-i
+    cpout<-cp
+    gap = current
+  }
+}
+
+p1
+cpout
+```
+
+p=3
+```{r}
+p = 3
+cp3=0
+gap<-100000
+
+for(i in 1:7){
+  for(j in 1:7){
+    if(j!=i){
+      submdl<-lm(noquote(paste(paste("y~"),paste(x[i]),paste("+"),paste(x[j]))),data=reactor)
+       cp<-ols_mallows_cp(submdl,mdl)
+       current<-abs(cp-p)
+       if(current<gap){
+        p2<-c(i,j)
+        cpout3<-cp
+        gap = current
+  }
+}
+    
+  }
+}
+cpout3
+p2
+```
+p=4
+```{r}
+p=4
+cp4=0
+gap<-100000
+
+for(i in 1:7){
+  for(j in 1:7){
+    for(k in 1:7)
+    if(j!=i && i!=k && k!=j){
+      submdl<-lm(noquote(paste(paste("y~"),paste(x[i]),paste("+"),paste(x[j]),paste("+"),paste(x[k]))),data=reactor)
+      cp<-ols_mallows_cp(submdl,mdl)
+      current<-abs(cp-p)
+      if(current<gap){
+        p3<-c(i,j,k)
+        cpout4<-cp
+        gap=current
+      }
+    }
+    
+  }
+}
+cpout4
+p3
+```
+
+p=5
+```{r}
+p=5
+cp5=0
+gap<-100000
+
+for(i in 1:7){
+  for(j in 1:7){
+    for(k in 1:7){
+      for(l in 1:7){
+        if(j!=i && i!=k && k!=j && l!=i && l!=k && l!=j){
+      submdl<-lm(noquote(paste(paste("y~"),paste(x[i]),paste("+"),paste(x[j]),paste("+"),paste(x[k]),paste("+"),paste(x[l]))),data=reactor)
+      
+      cp<-ols_mallows_cp(submdl,mdl)
+      current<-abs(cp-p)
+      if(current<gap){
+        p4<-c(i,j,k,l)
+        cpout5<-cp
+        gap=current
+      }
+      
+    }
+    }
+    }
+  }
+}
+p4
+cpout5
+```
+
+```{r}
+p<-c(2,3,4,5)
+Mallocs_Cp<-c(cpout,cpout3,cpout4,cpout5)
+plot(p,Mallocs_Cp,type="b",main="Malloc's CP for each p=2..5")
+
+cpmdl<-lm(y~x3+x5+x2,data=reactor)
+summary(cpmdl)
+
+```
+

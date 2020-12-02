@@ -1,0 +1,47 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+q4<-read.csv("guinea_pig.csv", header=TRUE)
+library(car)
+```
+
+```{r}
+pairs(q4)
+
+pigmdl<-lm(y~BodyWt+LiverWt+Dose,data=q4)
+test<-lm(y~BodyWt,data=q4)
+summary(test)
+
+summary(pigmdl)
+anova(pigmdl)
+
+
+resid<-rstandard(pigmdl)
+plot(pigmdl$fitted.values,resid)
+
+plot(pigmdl)
+rstudent(pigmdl)
+
+X<-cbind(1,q4$BodyWt,q4$LiverWt,q4$Dose)
+
+hii<-diag(X%*%solve(t(X)%*%X)%*%t(X))
+hii
+which(hii>2*ncol(X)/nrow(X))
+hii[3]
+
+cooks.distance(pigmdl)
+
+
+q4<-q4[-c(3),]
+head(q4)
+
+newmdl<-lm(y~BodyWt+LiverWt+Dose,data = q4)
+summary(newmdl)
+```
